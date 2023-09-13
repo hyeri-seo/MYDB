@@ -17,13 +17,13 @@ ALTER TABLE user ADD CONSTRAINT user_pk PRIMARY KEY(id);
 ALTER TABLE article ADD CONSTRAINT article_user_fk FOREIGN KEY(writer) REFERENCES user(id);
 
 INSERT article VALUES(NULL, '제목', '내용', 'hong'); -- error : 'hong'이 user 테이블에 없어서(외래키 제약조건 위배)
-INSERT article VALUES(NULL, '제목', '내용', NULL); -- 단 null 값은 가능
+INSERT article VALUES(NULL, '제목', '내용', NULL); -- 단 foreign key는 null 값은 가능
 
 INSERT INTO user VALUES('hong', '홍길동');
-INSERT INTO article VALUES(NULL, '제목', '내용', 'hong'); -- success
+INSERT INTO article VALUES(NULL, '제목', '내용', 'hong'); -- article success
 
 DELETE FROM user WHERE id='hong'; -- hong 데이터를 article 테이블에서 참조하고 있어서 삭제 불가
-UPDATE user SET id='kong' WHERE id='hong'; -- hong 데이터를 article 테이블에서 참조하고 있으면서 변경 불가
+UPDATE user SET id='kong' WHERE id='hong'; -- hong 데이터를 article 테이블에서 참조하고 있어서 변경 불가
 UPDATE user SET NAME='홍홍' WHERE id='hong'; -- success
 
 ALTER TABLE article DROP CONSTRAINT article_user_fk; -- 외래키 제약조건 삭제
@@ -51,10 +51,10 @@ CREATE TABLE user(
 );
 
 CREATE TABLE article(
-	num INT AUTO_INCREMENT,
+	num INT AUTO_INCREMENT PRIMARY KEY,
 	title VARCHAR(500),
 	content VARCHAR(1000),
-	writer VARCHAR(100) NOT NULL REFERENCES user(id)
+	writer VARCHAR(100) NOT NULL REFERENCES user(id) -- 참조한다는 거 자체가 foreign key임을 나타냄
 );
 
 CREATE TABLE article(
@@ -63,19 +63,19 @@ CREATE TABLE article(
 	content VARCHAR(1000),
 	writer VARCHAR(100),
 	PRIMARY KEY(num),
-	PRIMARY KEY(writer) REFERENCES user(id)
+	FOREIGN KEY(writer) REFERENCES user(id)
 );
 
 CREATE TABLE tcons(
-	NO INT -- primary key
+	NO INT -- primary key는 삭제 못함, not null 포함, 한 테이블에서 하나만 할 수 있음
 	NAME VARCHAR(20), -- not null
-	jumin VARCHAR(13), -- not null, unique
+	jumin VARCHAR(13), -- not null, unique는 null 가능, 한 테이블에서 여러 개 가능
 	AREA INT, -- check 1,2,3,4
 	deptno VARCHAR(6)  -- foreign key
 );
 	
 ALTER TABLE tcons ADD CONSTRAINT tcons_no_pk PRIMARY KEY(NO);
-ALTER TABLE tcons ADD CONSTRAINT name VARCHAR(20) NOT NULL;
+ALTER TABLE tcons ADD CONSTRAINT NAME VARCHAR(20) NOT NULL;
 ALTER TABLE tcons ADD CONSTRAINT jumin VARCHAR(13) NOT NULL;
 ALTER TABLE tcons ADD CONSTRAINT tcons_jumin_uk UNIQUE(jumin);
 ALTER TABLE tcons ADD CONSTRAINT tcons_area_ck CHECK(AREA IN(1,2,3,4));
